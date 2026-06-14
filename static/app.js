@@ -345,6 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if ('tokenJWT' in newBody) newBody.tokenJWT = tokenJWT;
                 resp = await fetch(url, { ...options, body: JSON.stringify(newBody) });
                 data = await resp.json();
+            } else {
+                handleLogout();
             }
         }
         return data;

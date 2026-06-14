@@ -1,11 +1,27 @@
 // UTT Dashboard Client Application Logic
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Session State variables
-    let userId = sessionStorage.getItem('userId');
-    let tokenJWT = sessionStorage.getItem('tokenJWT');
-    let studentName = sessionStorage.getItem('studentName') || 'Sinh viên';
-    let currentWeekOffset = 0; // 0 for current week, -1 for last week, 1 for next week etc.
+    // --- Persistent Auth State ---
+    // Stored in localStorage so token survives tab-close and browser restarts.
+    // Remember-me credentials are stored with a simple obfuscation (XOR) — enough to
+    // prevent casual shoulder-surfing; NOT cryptographic security.
+    function xorObfuscate(str) {
+        const key = 'UTT_PRT';
+        return btoa(str.split('').map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))).join(''));
+    }
+    function xorDeobfuscate(b64) {
+        try {
+            const key = 'UTT_PRT';
+            const str = atob(b64);
+            return str.split('').map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))).join('');
+        } catch { return null; }
+    }
+
+    let userId    = localStorage.getItem('userId');
+    let tokenJWT  = localStorage.getItem('tokenJWT');
+    let studentName = localStorage.getItem('studentName') || 'Sinh viên';
+    let isReAuthing = false; // guard against re-entrant re-auth loops
+    let currentWeekOffset = 0;
     let cachedDiemThanhPhan = [];
     let cachedGradesList = [];
     let examsList = [];
@@ -92,6 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userId && tokenJWT) {
             showApp();
         } else {
+            // Try silent auto-login using saved remember-me credentials
+            const savedUser = localStorage.getItem('remember_user');
+            const savedPass = localStorage.getItem('remember_pass');
+            if (savedUser && savedPass) {
+                const plainUser = xorDeobfuscate(savedUser);
+                const plainPass = xorDeobfuscate(savedPass);
+                if (plainUser && plainPass) {
+                    silentAutoLogin(plainUser, plainPass);
+                    return; // wait for silentAutoLogin to finish
+                }
+            }
             showLogin();
         }
 
@@ -235,6 +262,95 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.classList.toggle('fa-eye-slash');
     }
 
+    // ─── Core login API call (used by form submit AND silent auto-login) ─────────
+    async function performLogin(username, password) {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        return response.json();
+    }
+
+    // ─── Silent auto-login on page load ──────────────────────────────────────────
+    async function silentAutoLogin(username, password) {
+        // Show a subtle loading indicator on the login screen while we silently auth
+        showLogin();
+        loginSubmitBtn.classList.add('loading');
+        try {
+            const result = await performLogin(username, password);
+            if (result.success) {
+                userId    = result.userId;
+                tokenJWT  = result.tokenJWT;
+                localStorage.setItem('userId',   userId);
+                localStorage.setItem('tokenJWT', tokenJWT);
+                showToast('Đăng nhập tự động', `Chào mừng trở lại, ${username}!`, 'success');
+                showApp();
+            } else {
+                // Saved credentials invalid — clear them and show login normally
+                localStorage.removeItem('remember_user');
+                localStorage.removeItem('remember_pass');
+                loginSubmitBtn.classList.remove('loading');
+                showLogin();
+            }
+        } catch {
+            loginSubmitBtn.classList.remove('loading');
+            showLogin();
+        }
+    }
+
+    // ─── Silent re-auth when token expires mid-session ────────────────────────────
+    // Returns true if re-auth succeeded and caller should retry, false otherwise.
+    async function reAuth() {
+        if (isReAuthing) return false;
+        const savedUser = localStorage.getItem('remember_user');
+        const savedPass = localStorage.getItem('remember_pass');
+        if (!savedUser || !savedPass) return false;
+        const u = xorDeobfuscate(savedUser);
+        const p = xorDeobfuscate(savedPass);
+        if (!u || !p) return false;
+
+        isReAuthing = true;
+        showToast('Phiên hết hạn', 'Token hết hạn, đang tự động làm mới...', 'info');
+        try {
+            const result = await performLogin(u, p);
+            if (result.success) {
+                userId   = result.userId;
+                tokenJWT = result.tokenJWT;
+                localStorage.setItem('userId',   userId);
+                localStorage.setItem('tokenJWT', tokenJWT);
+                showToast('Làm mới thành công', 'Token đã được cập nhật, tiếp tục tải dữ liệu...', 'success');
+                isReAuthing = false;
+                return true;
+            }
+        } catch { /* fall through */ }
+        isReAuthing = false;
+        return false;
+    }
+
+    // ─── Fetch wrapper with one auto-retry on auth failure ────────────────────────
+    async function apiFetch(url, options) {
+        let resp = await fetch(url, options);
+        let data = await resp.json();
+        // Detect token-expired signal: UTT typically returns success:false with an
+        // auth-related message, or HTTP 401.
+        const isAuthFail = resp.status === 401 ||
+            (data && !data.success && typeof data.message === 'string' &&
+             /token|expire|auth|login|unauthori/i.test(data.message));
+        if (isAuthFail) {
+            const refreshed = await reAuth();
+            if (refreshed) {
+                // Re-build the options with the new token
+                const newBody = JSON.parse(options.body || '{}');
+                if ('tokenJWT' in newBody) newBody.tokenJWT = tokenJWT;
+                resp = await fetch(url, { ...options, body: JSON.stringify(newBody) });
+                data = await resp.json();
+            }
+        }
+        return data;
+    }
+
+    // ─── Form submit handler ──────────────────────────────────────────────────────
     async function handleLogin(e) {
         e.preventDefault();
         loginErrorMessage.style.display = 'none';
@@ -242,23 +358,27 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const username = usernameInput.value.trim();
         const password = passwordInput.value;
+        const rememberMe = document.getElementById('rememberMeCheck')?.checked || false;
 
         showToast('Xác thực', 'Đang kết nối đến máy chủ trường UTT...', 'info');
 
         try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-
-            const result = await response.json();
+            const result = await performLogin(username, password);
             if (result.success) {
-                userId = result.userId;
-                tokenJWT = result.tokenJWT;
-                sessionStorage.setItem('userId', userId);
-                sessionStorage.setItem('tokenJWT', tokenJWT);
-                
+                userId    = result.userId;
+                tokenJWT  = result.tokenJWT;
+                localStorage.setItem('userId',   userId);
+                localStorage.setItem('tokenJWT', tokenJWT);
+
+                // Save or clear remembered credentials based on checkbox
+                if (rememberMe) {
+                    localStorage.setItem('remember_user', xorObfuscate(username));
+                    localStorage.setItem('remember_pass', xorObfuscate(password));
+                } else {
+                    localStorage.removeItem('remember_user');
+                    localStorage.removeItem('remember_pass');
+                }
+
                 passwordInput.value = '';
                 showToast('Thành công', 'Đăng nhập thành công! Đang lấy dữ liệu học tập...', 'success');
                 showApp();
@@ -280,12 +400,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleLogout() {
-        sessionStorage.clear();
+        // Clear auth tokens but KEEP remember_user/remember_pass so auto-login still works.
+        // If the user wants to fully sign out and forget credentials, they should uncheck
+        // "Ghi nhớ đăng nhập" before logging out — or we could add a "Thoát hoàn toàn" option.
+        localStorage.removeItem('userId');
+        localStorage.removeItem('tokenJWT');
+        localStorage.removeItem('studentName');
         userId = null;
         tokenJWT = null;
         studentName = 'Sinh viên';
-        showToast('Đăng xuất', 'Đã đăng xuất khỏi tài khoản của bạn.', 'info');
+        showToast('Đăng xuất', 'Đã đăng xuất. Token xóa, credentials giữ lại nếu đã tick Ghi nhớ.', 'info');
         showLogin();
+        // Pre-fill username if remember-me is set
+        const savedUser = localStorage.getItem('remember_user');
+        if (savedUser) {
+            const u = xorDeobfuscate(savedUser);
+            if (u) usernameInput.value = u;
+            const remBox = document.getElementById('rememberMeCheck');
+            if (remBox) remBox.checked = true;
+        }
     }
 
     function showLogin() {
@@ -347,12 +480,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadGradesAndProfile() {
         try {
-            const response = await fetch('/api/grades', {
+            const opts = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ tokenJWT, userId })
-            });
-            const result = await response.json();
+            };
+            const result = await apiFetch('/api/grades', opts);
             
             if (result.success && result.data) {
                 const data = result.data;
@@ -361,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.rsThongTinNguoiHoc && data.rsThongTinNguoiHoc.length > 0) {
                     const info = data.rsThongTinNguoiHoc[0];
                     studentName = `${info.QLSV_NGUOIHOC_HODEM} ${info.QLSV_NGUOIHOC_TEN}`;
-                    sessionStorage.setItem('studentName', studentName);
+                    localStorage.setItem('studentName', studentName);
                     
                     sidebarStudentName.textContent = studentName;
                     sidebarStudentClass.textContent = `Mã: ${info.QLSV_NGUOIHOC_MASO}`;
@@ -601,17 +734,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/api/schedule', {
+            const schedOpts = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    tokenJWT,
-                    userId,
-                    startDate: startDateStr,
-                    endDate: endDateStr
-                })
-            });
-            const result = await response.json();
+                body: JSON.stringify({ tokenJWT, userId, startDate: startDateStr, endDate: endDateStr })
+            };
+            const result = await apiFetch('/api/schedule', schedOpts);
             
             if (result.success) {
                 const scheduleList = result.data || [];
@@ -735,12 +863,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadTuition() {
         try {
-            const response = await fetch('/api/tuition', {
+            const tuOpts = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ tokenJWT, userId })
-            });
-            const result = await response.json();
+            };
+            const result = await apiFetch('/api/tuition', tuOpts);
             
             if (result.success) {
                 const summaryList = result.summary || [];
@@ -928,12 +1056,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadExams() {
         try {
-            const response = await fetch('/api/exams', {
+            const exOpts = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ tokenJWT, userId })
-            });
-            const result = await response.json();
+            };
+            const result = await apiFetch('/api/exams', exOpts);
             
             if (result.success) {
                 examsList = (result.data || []).filter(item => item.PHANLOAI === 'LICHTHI');

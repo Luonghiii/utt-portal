@@ -1672,8 +1672,19 @@ body::before {
 }
 
 @media (max-width: 768px) {
+    /* Make the whole app a full-height flex column so sidebar can sit at bottom
+       without needing position:fixed (which breaks when a parent has transform/filter) */
+    html, body {
+        height: 100%;
+        overflow: hidden;
+    }
+
     .app-container {
-        grid-template-columns: 1fr !important; /* Stack vertically, sidebar is sticky at bottom */
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100dvh !important;   /* dynamic viewport height — handles mobile browser chrome */
+        height: 100vh !important;    /* fallback */
+        overflow: hidden !important;
     }
     
     /* Top header bar for mobile */
@@ -1739,16 +1750,18 @@ body::before {
         box-shadow: 0 4px 15px 0 var(--red-glow);
     }
     
-    /* Sleek Bottom Navigation Bar for Mobile */
+    /* ─── Bottom Navigation Bar ───────────────────────────────────────────────
+       Use order + static flow instead of position:fixed to avoid stacking context
+       issues caused by parent elements with backdrop-filter / transform.        */
     .sidebar {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
+        order: 9999 !important;          /* always renders AFTER main-content  */
+        position: static !important;     /* in-flow, no stacking context issues */
+        flex-shrink: 0 !important;
         width: 100% !important;
         height: 70px !important;
         min-height: 70px !important;
         max-height: 70px !important;
-        overflow: hidden !important;   /* CRITICAL: prevent nav text overflowing UP */
+        overflow: hidden !important;
         margin: 0 !important;
         padding: 0 !important;
         border-radius: 0 !important;
@@ -1851,9 +1864,13 @@ body::before {
         filter: drop-shadow(0 0 6px var(--primary-glow));
     }
     
-    /* Ensure content padding doesn't overlap bottom nav */
+    /* Main content: take remaining height, scroll internally */
     .main-content {
-        padding: 12px 12px 84px 12px !important;
+        flex: 1 1 0 !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 12px 12px 16px 12px !important;
         gap: 15px !important;
     }
     

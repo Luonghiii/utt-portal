@@ -665,7 +665,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="course-meta">
                         <span><i class="fa-solid fa-clock"></i> ${timeStr} (Tiết ${c.TIETBATDAU}-${c.TIETKETTHUC})</span>
                         <span><i class="fa-solid fa-door-open"></i> Phòng: <strong>${c.PHONGHOC_TEN}</strong></span>
-                        <span><i class="fa-solid fa-chalkboard-user"></i> ${c.GIANGVIEN}</span>
+                        <span><i class="fa-solid fa-chalkboard-user"></i> ${c.GIANGVIEN || 'Chưa cập nhật'}</span>
                     </div>
                 </div>
                 <div class="course-status">
@@ -718,7 +718,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="course-title" title="${c.TENHOCPHAN}">${c.TENHOCPHAN}</span>
                         <span class="course-time"><i class="fa-solid fa-clock"></i> ${timeStr} (T${c.TIETBATDAU}-${c.TIETKETTHUC})</span>
                         <span class="course-room"><i class="fa-solid fa-door-open"></i> Phòng: ${c.PHONGHOC_TEN}</span>
-                        <span class="course-teacher" title="${c.GIANGVIEN}"><i class="fa-solid fa-user"></i> ${c.GIANGVIEN.split(' ').pop()}</span>
+                        <span class="course-teacher" title="${c.GIANGVIEN || ''}"><i class="fa-solid fa-user"></i> ${(c.GIANGVIEN || 'Chưa cập nhật').split(' ').pop()}</span>
                     `;
                     cardsListDiv.appendChild(card);
                 });
@@ -936,7 +936,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
             
             if (result.success) {
-                examsList = result.data || [];
+                examsList = (result.data || []).filter(item => item.PHANLOAI === 'LICHTHI');
                 renderExamsTable();
                 renderDashboardExams();
             } else {

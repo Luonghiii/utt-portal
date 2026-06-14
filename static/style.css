@@ -1687,28 +1687,36 @@ body::before {
         overflow: hidden !important;
     }
     
-    /* Top header bar for mobile */
+    /* Top header bar for mobile — keep it COMPACT */
     .top-bar {
-        padding: 12px 16px;
+        padding-top: calc(14px + env(safe-area-inset-top, 0px)) !important;
+        padding-bottom: 10px !important;
+        padding-left: 14px !important;
+        padding-right: 14px !important;
+        min-height: 0;
         position: sticky;
         top: 0;
         z-index: 999;
-        background: rgba(6, 11, 22, 0.8) !important;
+        background: rgba(6, 11, 22, 0.88) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border-bottom: 1px solid var(--panel-border);
-        /* Prevent greeting text from overflowing and hiding the logout button */
         display: flex;
         align-items: center;
         justify-content: space-between;
         overflow: hidden;
+        gap: 8px;
     }
 
-    /* Greeting area must shrink — NOT the action buttons */
+    /* Greeting area: shrink, don't wrap */
     .top-bar .greeting-area {
         min-width: 0;
         flex: 1 1 0;
         overflow: hidden;
+        display: flex;
+        flex-direction: row;      /* Put greeting + date on same line */
+        align-items: baseline;
+        gap: 6px;
     }
 
     /* Action buttons (bell + logout) must NEVER shrink or wrap */
@@ -1719,31 +1727,37 @@ body::before {
     }
     
     .greeting-area h2 {
-        font-size: 1.15rem;
+        font-size: 0.9rem;          /* was 1.15rem */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        flex-shrink: 1;
+        min-width: 0;
     }
     
     .greeting-area p {
-        font-size: 0.75rem;
+        font-size: 0.68rem;         /* was 0.75rem */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        flex-shrink: 2;
+        min-width: 0;
+        opacity: 0.7;
     }
     
     .mobile-logout-btn {
         display: flex !important;
         justify-content: center;
         align-items: center;
-        width: 44px;
-        height: 44px;
+        width: 36px;        /* was 44px */
+        height: 36px;       /* was 44px */
         border-radius: 50%;
         border: 1px solid var(--panel-border);
         background-color: rgba(239, 68, 68, 0.08);
         color: var(--red);
         cursor: pointer;
         transition: var(--transition-smooth);
+        flex-shrink: 0;
     }
     .mobile-logout-btn:hover {
         background-color: rgba(239, 68, 68, 0.18);
@@ -1758,12 +1772,12 @@ body::before {
         position: static !important;     /* in-flow, no stacking context issues */
         flex-shrink: 0 !important;
         width: 100% !important;
-        height: 70px !important;
-        min-height: 70px !important;
-        max-height: 70px !important;
+        height: calc(65px + env(safe-area-inset-bottom, 0px)) !important;
+        min-height: calc(65px + env(safe-area-inset-bottom, 0px)) !important;
+        max-height: calc(65px + env(safe-area-inset-bottom, 0px)) !important;
         overflow: hidden !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 0 0 env(safe-area-inset-bottom, 0px) 0 !important;
         border-radius: 0 !important;
         border-top: 1px solid var(--panel-border) !important;
         border-left: none !important;

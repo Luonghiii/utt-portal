@@ -851,6 +851,10 @@ body::before {
     transform: none;
 }
 
+/* Desktop: show full label, hide short label */
+.nav-text-short { display: none; }
+.nav-text-full  { display: inline; }
+
 /* Main Content Area */
 .main-content {
     padding: 20px 20px;
@@ -1787,10 +1791,10 @@ body::before {
     
     .nav-item {
         margin: 0 !important;
-        padding: 6px 4px !important;
+        padding: 4px 2px !important;
         flex-direction: column !important;
-        gap: 4px !important;
-        font-size: 0 !important;          /* hide any stray text */
+        gap: 3px !important;
+        font-size: 1rem;                  /* reset — controlled by child spans */
         font-weight: 500 !important;
         align-items: center !important;
         flex: 1 !important;
@@ -1802,23 +1806,17 @@ body::before {
         height: 100%;
         justify-content: center;
         transition: var(--transition-smooth);
-        position: relative;
     }
 
-    /* Hide original full-length span on mobile — we use ::after with short label */
-    .nav-item > span {
-        display: none !important;
-    }
-
-    /* Show short mobile label from data-mobile-label attribute */
-    .nav-item::after {
-        content: attr(data-mobile-label);
-        font-size: 0.6rem;
-        font-weight: 500;
-        line-height: 1;
-        color: inherit;
-        margin-top: 2px;
-        white-space: nowrap;
+    /* Mobile: hide full label, show short label only */
+    .nav-text-full  { display: none !important; }
+    .nav-text-short {
+        display: block !important;
+        font-size: 0.58rem !important;
+        font-weight: 500 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        color: inherit !important;
     }
     
     .nav-item i {

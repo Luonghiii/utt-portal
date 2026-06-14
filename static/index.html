@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Thông Tin Sinh Viên UTT - Giao Diện Mới</title>
+    <meta name="description" content="Hệ thống quản lý thông tin học tập, thời khóa biểu và học phí sinh viên UTT với trải nghiệm người dùng cao cấp.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+    
+    <!-- Background Gradients & Ambient Particles -->
+    <div class="bg-gradient bg-1"></div>
+    <div class="bg-gradient bg-2"></div>
+    <div class="particles-container" id="particlesContainer"></div>
+
+    <!-- Toast Container for Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Login/Landing Container -->
+    <div class="landing-wrapper" id="loginContainer">
+        <!-- Left Column: Hero Landing Section with animations -->
+        <div class="landing-hero animate-fade-in">
+            <div class="hero-content">
+                <span class="badge-tag"><i class="fa-solid fa-bolt"></i> Phiên bản 2.0</span>
+                <h1 class="hero-title">Trải nghiệm UTT Portal <br><span class="gradient-text">Hoàn Toàn Mới</span></h1>
+                <p class="hero-desc">Hệ thống quản lý học tập thông minh dành riêng cho sinh viên UTT. Giao diện tối giản, tốc độ phản hồi tức thì và hoàn toàn bảo mật.</p>
+                
+                <div class="features-list">
+                    <div class="feat-item">
+                        <div class="feat-icon"><i class="fa-solid fa-calendar-week"></i></div>
+                        <div class="feat-text">
+                            <h4>Thời khóa biểu thông minh</h4>
+                            <p>Theo dõi lịch học theo tuần trực quan, dễ nhìn.</p>
+                        </div>
+                    </div>
+                    <div class="feat-item">
+                        <div class="feat-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="feat-text">
+                            <h4>Tra cứu điểm tức thời</h4>
+                            <p>Xem điểm theo học kỳ, tự động tính GPA hệ 10 và hệ 4.</p>
+                        </div>
+                    </div>
+                    <div class="feat-item">
+                        <div class="feat-icon"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="feat-text">
+                            <h4>Học phí trực quan</h4>
+                            <p>Theo dõi công nợ, khoản thu và lịch sử giao dịch rõ ràng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Animated floating mockup elements simulating the dashboard panels -->
+            <div class="hero-mockups">
+                <div class="mockup-card card-schedule animate-float-slow glass-panel">
+                    <div class="mockup-header">
+                        <i class="fa-solid fa-calendar-day text-blue"></i>
+                        <span>Thứ Hai, Tiết 1-3</span>
+                    </div>
+                    <h4>Lập trình Web</h4>
+                    <p><i class="fa-solid fa-door-open"></i> Phòng 402-H2</p>
+                </div>
+                <div class="mockup-card card-gpa animate-float-medium glass-panel">
+                    <div class="gpa-score">3.68</div>
+                    <span>GPA Hệ 4 tích lũy</span>
+                </div>
+                <div class="mockup-card card-tuition animate-float-fast glass-panel">
+                    <div class="tuition-status">
+                        <i class="fa-solid fa-circle-check text-green"></i>
+                        <span>Đã hoàn thành học phí</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Login Card -->
+        <div class="login-panel-right animate-fade-in" style="animation-delay: 0.15s;">
+            <div class="login-card glass-panel">
+                <div class="login-header">
+                    <div class="logo-circle">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h2>Đăng Nhập Portal</h2>
+                    <p>Sử dụng tài khoản Cổng thông tin đào tạo</p>
+                </div>
+                
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <label for="usernameInput"><i class="fa-solid fa-user"></i> Mã sinh viên</label>
+                        <input type="text" id="usernameInput" placeholder="Nhập mã sinh viên (VD: 76DCTD26342)" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordInput"><i class="fa-solid fa-lock"></i> Mật khẩu</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="passwordInput" placeholder="Nhập mật khẩu của bạn" required autocomplete="current-password">
+                            <button type="button" id="togglePasswordBtn" class="toggle-password-btn">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="error-message" id="loginErrorMessage"></div>
+                    <button type="submit" id="loginSubmitBtn" class="btn btn-primary btn-block">
+                        <span class="btn-text">Bắt đầu khám phá <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i></span>
+                        <span class="spinner"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
+                    </button>
+                </form>
+                <div class="login-footer">
+                    <p><i class="fa-solid fa-shield-halved"></i> Thông tin được gửi trực tiếp đến hệ thống UTT để xác thực và hoàn toàn bảo mật.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application Container (Hidden by default) -->
+    <div class="app-container hidden" id="appContainer">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-panel" id="appSidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <span>UTT Portal</span>
+            </div>
+            
+            <div class="user-quick-profile">
+                <div class="avatar-container" id="avatarContainer" title="Nhấn để đổi ảnh đại diện">
+                    <img src="https://ui-avatars.com/api/?name=User&background=3b82f6&color=fff&size=128" alt="Avatar" id="userAvatar">
+                    <div class="avatar-overlay">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                </div>
+                <input type="file" id="avatarUploadInput" accept="image/*" class="hidden" style="display: none;">
+                <div class="user-info">
+                    <h3 id="sidebarStudentName">Nguyễn Văn A</h3>
+                    <p id="sidebarStudentClass">Lớp: ---</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-tab="dashboard" id="navTabDashboard">
+                        <i class="fa-solid fa-gauge"></i> <span>Tổng quan</span>
+                    </li>
+                    <li class="nav-item" data-tab="timetable" id="navTabTimetable">
+                        <i class="fa-solid fa-calendar-days"></i> <span>Thời khóa biểu</span>
+                    </li>
+                    <li class="nav-item" data-tab="exams" id="navTabExams">
+                        <i class="fa-solid fa-file-invoice"></i> <span>Lịch thi</span>
+                    </li>
+                    <li class="nav-item" data-tab="grades" id="navTabGrades">
+                        <i class="fa-solid fa-graduation-cap"></i> <span>Kết quả học tập</span>
+                    </li>
+                    <li class="nav-item" data-tab="finance" id="navTabFinance">
+                        <i class="fa-solid fa-credit-card"></i> <span>Học phí</span>
+                    </li>
+                    <li class="nav-item" data-tab="predictor" id="navTabPredictor">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Dự báo học tập</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>Đăng xuất</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Top Bar Header -->
+            <header class="top-bar glass-panel">
+                <div class="greeting-area">
+                    <h2 id="welcomeGreeting">Chào bạn!</h2>
+                    <p id="currentDateString">Chủ nhật, ngày 14 tháng 6, 2026</p>
+                </div>
+                <div class="top-bar-actions">
+                    <div class="notification-bell">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="badge"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Tab Content Panel Container -->
+            <div class="tab-panels">
+                
+                <!-- 1. DASHBOARD VIEW -->
+                <section class="tab-panel active animate-fade-in" id="panelDashboard">
+                    <div class="grid-layout">
+                        
+                        <!-- Left Column: Student Profile Details -->
+                        <div class="card glass-panel profile-card col-span-2">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-address-card"></i> Thông tin sinh viên</h3>
+                            </div>
+                            <div class="profile-details-grid">
+                                <div class="detail-item">
+                                    <span class="label">Mã sinh viên</span>
+                                    <span class="value" id="profileStudentCode">---</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Họ và tên</span>
+                                    <span class="value" id="profileStudentName">---</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Ngày sinh</span>
+                                    <span class="value" id="profileStudentDob">---</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Lớp sinh hoạt</span>
+                                    <span class="value" id="profileStudentClass">---</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Chuyên ngành</span>
+                                    <span class="value" id="profileStudentMajor">---</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">Hệ đào tạo</span>
+                                    <span class="value" id="profileStudentProgram">---</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Academic Summaries (GPA, Credits) -->
+                        <div class="card glass-panel academic-summary-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-line"></i> Tóm tắt học tập</h3>
+                            </div>
+                            <div class="summary-stats">
+                                <div class="stat-box">
+                                    <span class="stat-value" id="gpaTen">0.0</span>
+                                    <span class="stat-label">ĐTB Hệ 10</span>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-value text-blue" id="gpaFour">0.0</span>
+                                    <span class="stat-label">ĐTB Hệ 4</span>
+                                </div>
+                                <div class="stat-box">
+                                    <span class="stat-value text-green" id="accumulatedCredits">0</span>
+                                    <span class="stat-label">Tín chỉ tích lũy</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Left Column: Timetable for Today -->
+                        <div class="card glass-panel col-span-2">
+                            <div class="card-header d-flex-between">
+                                <h3><i class="fa-solid fa-calendar-day"></i> Lịch học hôm nay</h3>
+                                <span class="tag tag-blue" id="todayClassesCount">0 tiết học</span>
+                            </div>
+                            <div class="today-schedule-list" id="todayScheduleList">
+                                <div class="no-schedule">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    <p>Không có lịch học nào trong ngày hôm nay.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Tuition summary -->
+                        <div class="card glass-panel">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-wallet"></i> Học phí và tài chính</h3>
+                            </div>
+                            <div class="tuition-circle-container">
+                                <div class="tuition-donut" id="tuitionDonut">
+                                    <div class="donut-center">
+                                        <span class="donut-value" id="tuitionRemaining">0đ</span>
+                                        <span class="donut-label">Còn nợ</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tuition-simple-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color paid"></span>
+                                    <span>Đã đóng: <strong id="tuitionTotalPaid">0đ</strong></span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color payable"></span>
+                                    <span>Tổng số phải nộp: <strong id="tuitionTotalPayable">0đ</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Left Column: New Grades -->
+                        <div class="card glass-panel col-span-2">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-bell-concierge"></i> Điểm mới cập nhật</h3>
+                            </div>
+                            <div class="new-grades-list" id="newGradesList">
+                                <div class="no-schedule">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <p>Không có điểm số mới cập nhật gần đây.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Upcoming Exams -->
+                        <div class="card glass-panel">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-circle-exclamation"></i> Lịch thi sắp tới</h3>
+                            </div>
+                            <div class="upcoming-exams-list" id="upcomingExamsList">
+                                <div class="no-schedule">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <p>Không có lịch thi nào sắp tới.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 2. TIMETABLE VIEW -->
+                <section class="tab-panel animate-fade-in" id="panelTimetable">
+                    <div class="card glass-panel week-picker-card">
+                        <div class="week-navigation">
+                            <button id="prevWeekBtn" class="btn btn-icon"><i class="fa-solid fa-chevron-left"></i> Tuần trước</button>
+                            <span class="current-week-label" id="currentWeekLabel">Tuần từ --/--/---- đến --/--/----</span>
+                            <button id="nextWeekBtn" class="btn btn-icon">Tuần sau <i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="timetable-week-grid" id="timetableWeekGrid">
+                        <!-- Filled dynamically by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- 3. GRADES VIEW -->
+                <section class="tab-panel animate-fade-in" id="panelGrades">
+                    <div class="grades-header-stats card glass-panel">
+                        <div class="profile-details-grid">
+                            <div class="stat-box">
+                                <span class="stat-value" id="gradesGpaTen">0.0</span>
+                                <span class="stat-label">Trung bình học tập (Hệ 10)</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-value text-blue" id="gradesGpaFour">0.0</span>
+                                <span class="stat-label">Trung bình học tập (Hệ 4)</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-value text-green" id="gradesCredits">0</span>
+                                <span class="stat-label">Tổng số tín chỉ đăng ký</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="stat-value text-purple" id="gradesAccumulatedCredits">0</span>
+                                <span class="stat-label">Tổng số tín chỉ tích lũy</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grades-accordion" id="gradesAccordion">
+                        <div class="loading-state">
+                            <i class="fa-solid fa-circle-notch fa-spin fa-2x text-blue"></i>
+                            <p>Đang tải bảng điểm học tập...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. FINANCE VIEW -->
+                <section class="tab-panel animate-fade-in" id="panelFinance">
+                    <div class="grid-layout">
+                        <!-- Summary values -->
+                        <div class="card glass-panel tuition-summary-row col-span-3">
+                            <div class="tuition-summary-box">
+                                <span class="label">Tổng phải nộp</span>
+                                <span class="value text-blue" id="finTotalPayable">0đ</span>
+                            </div>
+                            <div class="tuition-summary-box">
+                                <span class="label">Tổng đã nộp</span>
+                                <span class="value text-green" id="finTotalPaid">0đ</span>
+                            </div>
+                            <div class="tuition-summary-box">
+                                <span class="label">Đã miễn giảm</span>
+                                <span class="value text-purple" id="finTotalExempt">0đ</span>
+                            </div>
+                            <div class="tuition-summary-box">
+                                <span class="label">Học phí còn nợ</span>
+                                <span class="value text-red" id="finTotalRemaining">0đ</span>
+                            </div>
+                        </div>
+
+                        <!-- Finance Tabs: Payable fees and paid fees history -->
+                        <div class="card glass-panel col-span-3">
+                            <div class="card-tabs">
+                                <button class="card-tab active" data-subtab="payable" id="tabPayableFees">Khoản phải nộp</button>
+                                <button class="card-tab" data-subtab="paid" id="tabPaidFees">Lịch sử giao dịch</button>
+                            </div>
+                            
+                            <!-- Subtab 1: Payable breakdown -->
+                            <div class="subtab-panel active" id="subpanelPayable">
+                                <div class="table-responsive">
+                                    <table class="data-table" id="tablePayableFees">
+                                        <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Học kỳ</th>
+                                                <th>Khoản thu</th>
+                                                <th>Nội dung</th>
+                                                <th class="text-right">Số tiền</th>
+                                                <th>Ngày tạo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- filled dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Subtab 2: Paid breakdown -->
+                            <div class="subtab-panel" id="subpanelPaid">
+                                <div class="table-responsive">
+                                    <table class="data-table" id="tablePaidFees">
+                                        <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Học kỳ</th>
+                                                <th>Khoản thu</th>
+                                                <th>Nội dung</th>
+                                                <th class="text-right">Số tiền đóng</th>
+                                                <th>Ngày đóng</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- filled dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. EXAMS VIEW -->
+                <section class="tab-panel animate-fade-in" id="panelExams">
+                    <div class="card glass-panel">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-file-invoice"></i> Lịch thi chi tiết học kỳ</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table" id="tableExams">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="width: 50px">STT</th>
+                                        <th>Mã HP</th>
+                                        <th>Tên học phần</th>
+                                        <th class="text-center" style="width: 80px">Số TC</th>
+                                        <th class="text-center" style="width: 100px">Ngày thi</th>
+                                        <th class="text-center" style="width: 120px">Ca thi (Giờ thi)</th>
+                                        <th class="text-center" style="width: 120px">Hình thức</th>
+                                        <th class="text-center" style="width: 80px">SBD</th>
+                                        <th class="text-center" style="width: 100px">Phòng thi</th>
+                                        <th>Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted">Đang tải lịch thi...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. PREDICTOR VIEW -->
+                <section class="tab-panel animate-fade-in" id="panelPredictor">
+                    <div class="grid-layout">
+                        
+                        <!-- Left Column: GPA Target Planner -->
+                        <div class="card glass-panel col-span-2">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-line"></i> Lập kế hoạch GPA mục tiêu tốt nghiệp</h3>
+                            </div>
+                            <div class="gpa-planner-desc">
+                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+                                    Hệ thống tự động tính toán điểm trung bình cần đạt ở các tín chỉ còn lại để đạt các mốc tốt nghiệp (Xuất sắc, Giỏi, Khá, Trung bình) tại UTT.
+                                </p>
+                            </div>
+                            <div class="planner-stats-grid">
+                                <div class="planner-stat-box">
+                                    <span class="label">Tổng số tín chỉ CTĐT</span>
+                                    <span class="value" id="planTotalCredits">150</span>
+                                </div>
+                                <div class="planner-stat-box">
+                                    <span class="label">Tích lũy hiện tại</span>
+                                    <span class="value text-green" id="planCurrentCredits">0</span>
+                                </div>
+                                <div class="planner-stat-box">
+                                    <span class="label">Tín chỉ còn lại</span>
+                                    <span class="value text-blue" id="planRemainingCredits">150</span>
+                                </div>
+                                <div class="planner-stat-box">
+                                    <span class="label">GPA tích lũy (Hệ 4)</span>
+                                    <span class="value text-purple" id="planCurrentGpa">0.0</span>
+                                </div>
+                            </div>
+                            <div class="table-responsive" style="margin-top: 20px;">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Xếp loại bằng</th>
+                                            <th class="text-center">GPA Mục tiêu</th>
+                                            <th class="text-center">Điểm các kỳ còn lại cần đạt (Hệ 4)</th>
+                                            <th class="text-center">Tương đương (Hệ 10)</th>
+                                            <th>Trạng thái dự báo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gpaPlannerTableBody">
+                                        <!-- Filled by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Final Exam Grade Predictor -->
+                        <div class="card glass-panel">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-calculator"></i> Dự báo điểm thi cuối kỳ</h3>
+                            </div>
+                            <div class="course-predictor-selector" style="margin-bottom: 15px;">
+                                <label for="predictorCourseSelect" style="display: block; margin-bottom: 5px; font-size: 0.9rem;">Chọn môn học đang học:</label>
+                                <select id="predictorCourseSelect" class="form-control" style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-color);">
+                                    <option value="">-- Chọn môn học --</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Dynamic calculator area -->
+                            <div id="predictorCalculatorArea" class="hidden" style="margin-top: 20px;">
+                                <div class="component-grades-summary" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                    <div class="grade-comp-badge" style="flex: 1; padding: 10px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; text-align: center;">
+                                        <div class="label" style="font-size: 0.75rem; color: var(--text-muted);">Chuyên cần (20%)</div>
+                                        <div class="val text-blue" id="predScoreCc" style="font-size: 1.2rem; font-weight: bold; color: var(--blue);">--</div>
+                                    </div>
+                                    <div class="grade-comp-badge" style="flex: 1; padding: 10px; background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); border-radius: 6px; text-align: center;">
+                                        <div class="label" style="font-size: 0.75rem; color: var(--text-muted);">Giữa kỳ (30%)</div>
+                                        <div class="val text-purple" id="predScoreGk" style="font-size: 1.2rem; font-weight: bold; color: var(--purple);">--</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="target-table-title" style="margin: 15px 0 8px 0; font-weight: 500; font-size: 0.9rem;">
+                                    Điểm thi CK cần đạt (trọng số 50%, tối thiểu >= 2.0):
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="data-table compact-table" style="font-size: 0.85rem;">
+                                        <thead>
+                                            <tr>
+                                                <th>Điểm chữ</th>
+                                                <th class="text-center">Hệ 10</th>
+                                                <th class="text-center">Hệ 4</th>
+                                                <th class="text-center">Điểm thi cuối kỳ cần</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="predScoreTargetTableBody">
+                                            <!-- filled by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="interactive-slider-box" style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                                    <div class="slider-header d-flex-between" style="font-size: 0.9rem; margin-bottom: 8px;">
+                                        <span style="font-weight: 500;">Thử giả định điểm thi cuối kỳ:</span>
+                                        <span class="slider-value-display font-bold text-blue" id="sliderValueDisplay" style="font-size: 1.1rem; color: var(--blue);">5.0</span>
+                                    </div>
+                                    <input type="range" min="0" max="10" step="0.1" value="5.0" class="premium-slider" id="predScoreSlider" style="width: 100%; margin-bottom: 15px;">
+                                    
+                                    <div class="result-forecast-box" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+                                        <div class="d-flex-between">
+                                            <span>Tổng kết môn (Hệ 10):</span>
+                                            <span class="font-bold text-blue" id="forecastTotalScore">5.0</span>
+                                        </div>
+                                        <div class="d-flex-between">
+                                            <span>Điểm chữ & Hệ 4:</span>
+                                            <span class="font-bold text-purple" id="forecastLetterGrade">C (2.0)</span>
+                                        </div>
+                                        <div class="d-flex-between">
+                                            <span>Kết quả môn học:</span>
+                                            <span class="tag" id="forecastResultTag">ĐẠT</span>
+                                        </div>
+                                        <div class="warning-msg-box text-red hidden" id="forecastWarningBox" style="font-size: 0.8rem; color: var(--red); margin-top: 5px;">
+                                            <i class="fa-solid fa-triangle-exclamation"></i> Chú ý: Dưới điểm liệt cuối kỳ (< 2.0), bạn sẽ trượt môn!
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="predictorEmptyMsg" class="no-schedule text-muted">
+                                <i class="fa-solid fa-clipboard-question"></i>
+                                <p>Không có môn học đang học nào có điểm thành phần để dự toán, hoặc chưa chọn môn học.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Component Grades Modal -->
+    <div class="modal-backdrop hidden" id="gradesModalBackdrop">
+        <div class="modal-container glass-panel animate-zoom-in">
+            <div class="modal-header d-flex-between">
+                <h3 id="modalCourseTitle">Điểm chi tiết học phần</h3>
+                <button class="modal-close-btn" id="closeGradesModalBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="data-table" id="tableComponentGrades">
+                        <thead>
+                            <tr>
+                                <th>Thành phần điểm</th>
+                                <th class="text-center">Điểm số (Hệ 10)</th>
+                                <th class="text-center">Lần học</th>
+                                <th class="text-center">Lần thi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

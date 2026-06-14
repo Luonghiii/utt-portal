@@ -1792,13 +1792,28 @@ body::before {
     }
     
     .day-column {
-        flex: 0 0 270px !important;
+        flex: 0 0 240px !important;
         scroll-snap-align: center !important;
         background: rgba(255, 255, 255, 0.02) !important;
         border: 1px solid var(--panel-border) !important;
         border-radius: var(--border-radius-md) !important;
         padding: 12px !important;
         margin: 0 !important;
+    }
+    
+    .timetable-card {
+        padding: 10px 12px !important;
+        gap: 4px !important;
+    }
+    
+    .timetable-card .course-title {
+        font-size: 0.82rem !important;
+    }
+    
+    .timetable-card .course-time,
+    .timetable-card .course-room,
+    .timetable-card .course-teacher {
+        font-size: 0.68rem !important;
     }
     
     /* GPA Planner mobile styling */

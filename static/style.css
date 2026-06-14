@@ -1682,14 +1682,39 @@ body::before {
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         border-bottom: 1px solid var(--panel-border);
+        /* Prevent greeting text from overflowing and hiding the logout button */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        overflow: hidden;
+    }
+
+    /* Greeting area must shrink — NOT the action buttons */
+    .top-bar .greeting-area {
+        min-width: 0;
+        flex: 1 1 0;
+        overflow: hidden;
+    }
+
+    /* Action buttons (bell + logout) must NEVER shrink or wrap */
+    .top-bar .top-bar-actions {
+        flex-shrink: 0;
+        gap: 10px;
+        margin-left: 10px;
     }
     
     .greeting-area h2 {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .greeting-area p {
-        font-size: 0.78rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .mobile-logout-btn {

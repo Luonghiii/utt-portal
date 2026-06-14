@@ -871,6 +871,10 @@ body::before {
     align-items: center;
 }
 
+.mobile-brand-title {
+    display: none;
+}
+
 .greeting-area h2 {
     font-size: 1.6rem;
     font-weight: 800;
@@ -1689,8 +1693,8 @@ body::before {
     
     /* Top header bar for mobile — keep it COMPACT */
     .top-bar {
-        padding-top: calc(14px + env(safe-area-inset-top, 0px)) !important;
-        padding-bottom: 10px !important;
+        padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important;
+        padding-bottom: 12px !important;
         padding-left: 14px !important;
         padding-right: 14px !important;
         min-height: 0;
@@ -1708,60 +1712,27 @@ body::before {
         gap: 8px;
     }
 
-    /* Greeting area: shrink, don't wrap */
-    .top-bar .greeting-area {
-        min-width: 0;
-        flex: 1 1 0;
-        overflow: hidden;
-        display: flex;
-        flex-direction: row;      /* Put greeting + date on same line */
-        align-items: baseline;
-        gap: 6px;
+    .mobile-brand-title {
+        display: block !important;
+        font-weight: 700;
+        font-size: 1.15rem;
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #10b981 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    /* Action buttons (bell + logout) must NEVER shrink or wrap */
+    /* Hide greeting area and mobile logout button in header */
+    .top-bar .greeting-area,
+    #logoutBtnMobile,
+    .mobile-logout-btn {
+        display: none !important;
+    }
+
+    /* Action buttons (bell) must NEVER shrink or wrap */
     .top-bar .top-bar-actions {
         flex-shrink: 0;
         gap: 10px;
         margin-left: 10px;
-    }
-    
-    .greeting-area h2 {
-        font-size: 0.9rem;          /* was 1.15rem */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex-shrink: 1;
-        min-width: 0;
-    }
-    
-    .greeting-area p {
-        font-size: 0.68rem;         /* was 0.75rem */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex-shrink: 2;
-        min-width: 0;
-        opacity: 0.7;
-    }
-    
-    .mobile-logout-btn {
-        display: flex !important;
-        justify-content: center;
-        align-items: center;
-        width: 36px;        /* was 44px */
-        height: 36px;       /* was 44px */
-        border-radius: 50%;
-        border: 1px solid var(--panel-border);
-        background-color: rgba(239, 68, 68, 0.08);
-        color: var(--red);
-        cursor: pointer;
-        transition: var(--transition-smooth);
-        flex-shrink: 0;
-    }
-    .mobile-logout-btn:hover {
-        background-color: rgba(239, 68, 68, 0.18);
-        box-shadow: 0 4px 15px 0 var(--red-glow);
     }
     
     /* ─── Bottom Navigation Bar ───────────────────────────────────────────────
@@ -1777,7 +1748,7 @@ body::before {
         max-height: calc(65px + env(safe-area-inset-bottom, 0px)) !important;
         overflow: hidden !important;
         margin: 0 !important;
-        padding: 0 0 env(safe-area-inset-bottom, 0px) 0 !important;
+        padding: 0 12px env(safe-area-inset-bottom, 0px) 12px !important;
         border-radius: 0 !important;
         border-top: 1px solid var(--panel-border) !important;
         border-left: none !important;
@@ -1787,20 +1758,79 @@ body::before {
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
         z-index: 1000 !important;
+        display: flex !important;
         flex-direction: row !important;
-        justify-content: space-around !important;
+        justify-content: space-between !important;
         align-items: center !important;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4) !important;
     }
     
-    .sidebar-brand, 
-    .user-quick-profile, 
-    .sidebar-footer {
+    .sidebar-brand {
         display: none !important; /* Hide elements not suited for bottom bar */
+    }
+
+    /* Place profile avatar and logout button next to each other on the right */
+    .user-quick-profile {
+        display: flex !important;
+        order: 3 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        align-items: center !important;
+    }
+
+    .user-quick-profile .user-info {
+        display: none !important;
+    }
+
+    .user-quick-profile .avatar-container {
+        width: 36px !important;
+        height: 36px !important;
+        margin: 0 !important;
+    }
+
+    .user-quick-profile .avatar-container img {
+        width: 36px !important;
+        height: 36px !important;
+        border: 1px solid var(--panel-border) !important;
+        border-radius: 50% !important;
+    }
+
+    .sidebar-footer {
+        display: flex !important;
+        order: 2 !important;
+        margin: 0 8px 0 10px !important;
+        padding: 0 !important;
+    }
+
+    #logoutBtn {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background-color: rgba(239, 68, 68, 0.08) !important;
+        border: 1px solid var(--panel-border) !important;
+        color: var(--red) !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+    }
+
+    #logoutBtn span {
+        display: none !important;
+    }
+
+    #logoutBtn i {
+        margin: 0 !important;
+        font-size: 1rem !important;
     }
     
     .sidebar-nav {
-        width: 100%;
+        flex: 1 1 auto !important;
+        width: auto !important;
+        order: 1 !important;
         height: 100%;
         max-height: 70px;
         overflow: hidden;

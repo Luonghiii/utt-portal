@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentDateString = document.getElementById('currentDateString');
     const userAvatar = document.getElementById('userAvatar');
     const logoutBtn = document.getElementById('logoutBtn');
+    const logoutBtnMobile = document.getElementById('logoutBtnMobile');
     
     // DOM Elements - Navigation Tabs
     const navTabs = document.querySelectorAll('.nav-item');
@@ -97,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Event Listeners - Auth
         togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
         loginForm.addEventListener('submit', handleLogin);
-        logoutBtn.addEventListener('click', handleLogout);
+        if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+        if (logoutBtnMobile) logoutBtnMobile.addEventListener('click', handleLogout);
 
         // Event Listeners - Navigation Tabs Switching
         navTabs.forEach(tab => {
